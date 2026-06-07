@@ -1,5 +1,6 @@
 package model.dungeon;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -134,12 +135,12 @@ public class Floor {
         }
 
         boolean[][] visited = new boolean[ROWS][COLS];
-        List<Room> queue = new ArrayList<>();
+        ArrayDeque<Room> queue = new ArrayDeque<>();
         queue.add(from);
         visited[from.getRow()][from.getCol()] = true;
 
         while (!queue.isEmpty()) {
-            Room current = queue.remove(0);
+            Room current = queue.poll();
 
             if (current == to) {
                 return true;

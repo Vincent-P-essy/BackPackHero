@@ -165,9 +165,13 @@ public class Combat {
      * Removes defeated enemies and ends combat if none remain.
      */
     public void cleanupDeadEnemies() {
+        int expEarned = enemies.stream()
+            .filter(e -> !e.isAlive())
+            .mapToInt(Enemy::getExperienceReward)
+            .sum();
         enemies.removeIf(e -> !e.isAlive());
         if (enemies.isEmpty()) {
-            endCombat();
+            endCombat(expEarned);
         }
     }
 
@@ -184,12 +188,19 @@ public class Combat {
 
         heroTurn = false;
 
-        // Execute enemy actions
-        for (Enemy enemy : enemies) {
+        // Execute enemy actions (with status effects applied)
+        for (Enemy enemy : new ArrayList<>(enemies)) {
+            if (!enemy.isAlive()) continue;
+            enemy.applyStartOfTurnEffects();
             if (enemy.isAlive()) {
                 enemy.executeAction(hero);
+                enemy.applyEndOfTurnEffects();
             }
         }
+
+        // Remove enemies killed by status effects
+        cleanupDeadEnemies();
+        if (combatEnded) return;
 
         // Check if hero died
         if (!hero.isAlive()) {
@@ -243,16 +254,10 @@ public class Combat {
     }
 
     /**
-     * Ends the combat (victory).
+     * Ends the combat (victory) and awards experience.
      */
-    private void endCombat() {
+    private void endCombat(int expEarned) {
         combatEnded = true;
-
-        // Award experience
-        int totalExp = 0;
-        for (Enemy enemy : getEnemies()) {
-            totalExp += enemy.getExperienceReward();
-        }
-        hero.addExperience(totalExp);
+        hero.addExperience(expEarned);
     }
 }

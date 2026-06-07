@@ -1,7 +1,5 @@
 package model.combat;
 
-import model.Hero;
-
 /**
  * Bee Queen enemy - boss-type enemy.
  * Special: Summons bee minions (regeneration effect) when defending
@@ -22,20 +20,13 @@ public class BeeQueen extends Enemy {
 
     @Override
     protected EnemyAction chooseAction() {
-        // Queens prefer defending to summon bees (60% defend, 40% attack)
         return getRandom().nextDouble() < 0.6 ? EnemyAction.DEFEND : EnemyAction.ATTACK;
     }
 
     @Override
-    public void executeAction(Hero hero) {
-        if (getNextAction() == EnemyAction.ATTACK) {
-            // Normal attack
-            super.executeAction(hero);
-        } else {
-            // Defend and summon bees (represented by regeneration)
-            addProtection(DEFENSE_VALUE);
-            addStatusEffect(new RegenerationEffect(3, 1));
-        }
+    protected void performDefend() {
+        super.performDefend();
+        addStatusEffect(new RegenerationEffect(3, 1));
     }
 
     @Override

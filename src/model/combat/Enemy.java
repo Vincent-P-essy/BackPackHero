@@ -193,14 +193,14 @@ public abstract class Enemy {
      * Performs an attack on the hero.
      * @param hero the hero
      */
-    private void performAttack(Hero hero) {
+    protected void performAttack(Hero hero) {
         hero.takeDamage(getAttackDamage());
     }
 
     /**
      * Performs a defensive action.
      */
-    private void performDefend() {
+    protected void performDefend() {
         addProtection(getDefenseValue());
     }
 

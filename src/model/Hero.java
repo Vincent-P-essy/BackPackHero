@@ -275,18 +275,27 @@ public class Hero {
     }
 
     /**
-     * Checks if the hero should level up.
-     * @return true if leveled up
+     * Checks if the hero should level up, cascading if enough XP for multiple levels.
      */
-    private boolean checkLevelUp() {
-        // Simple level up formula: need level * 10 experience for next level
+    private void checkLevelUp() {
         int requiredExp = level * 10;
-        if (experience >= requiredExp) {
+        while (experience >= requiredExp) {
             experience -= requiredExp;
             level++;
-            return true;
+            applyLevelUpBonuses();
+            requiredExp = level * 10;
         }
-        return false;
+    }
+
+    /**
+     * Applies stat bonuses on level up: +5 max HP, +1 max energy every 3 levels.
+     */
+    private void applyLevelUpBonuses() {
+        maxHealthPoints += 5;
+        currentHealthPoints = Math.min(currentHealthPoints + 5, maxHealthPoints);
+        if (level % 3 == 0) {
+            maxEnergy++;
+        }
     }
 
     /**

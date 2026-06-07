@@ -580,11 +580,12 @@ public class GameController {
             return;
         }
 
-        // Remove from backpack and add gold
-        gameData.getHero().getBackpack().removeEquipment(foundEquipment);
-        gameData.getHero().addGold(foundEquipment.equipment().getSellPrice());
-        
-        System.out.println("Sold " + foundEquipment.equipment().getName() + " for " + foundEquipment.equipment().getSellPrice() + " gold!");
+        int price = foundEquipment.equipment().getSellPrice();
+        if (gameData.sellEquipment(foundEquipment)) {
+            System.out.println("Sold " + foundEquipment.equipment().getName() + " for " + price + " gold!");
+        } else {
+            System.out.println("Could not sell item.");
+        }
     }
 
     /**

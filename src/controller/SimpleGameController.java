@@ -14,7 +14,7 @@ public class SimpleGameController {
     private final GameData gameData;
     private final SimpleGameView view;
     private boolean running;
-    private model.equipment.Equipment selectedEquipment; // Equipment selected for use/placement
+    private model.Cell.PlacedEquipment selectedEquipment; // Equipment selected for use/placement
     private model.equipment.Equipment pendingEquipment; // Equipment waiting to be placed in backpack
 
     public SimpleGameController(GameData gameData, SimpleGameView view) {
@@ -72,7 +72,6 @@ public class SimpleGameController {
         // Q always quits
         if (key == KeyboardEvent.Key.Q) {
             running = false;
-            System.out.println("Exiting game...");
             return;
         }
 
@@ -123,11 +122,7 @@ public class SimpleGameController {
         }
 
         if (targetRoom != null) {
-            if (gameData.moveToRoom(targetRoom)) {
-                System.out.println("Moved to " + targetRoom.getType() + " room");
-            } else {
-                System.out.println("Cannot move there!");
-            }
+            gameData.moveToRoom(targetRoom);
         }
     }
 
@@ -138,18 +133,9 @@ public class SimpleGameController {
 
         switch (key) {
             case E:
-                // End turn (which triggers enemy actions)
-                System.out.println("Ending turn...");
                 gameData.getCurrentCombat().endHeroTurn();
-
-                // Check if combat is over
                 if (gameData.getCurrentCombat().isCombatEnded()) {
                     gameData.endCombat();
-                    if (gameData.getHero().isAlive()) {
-                        System.out.println("Victory!");
-                    } else {
-                        System.out.println("Defeat!");
-                    }
                 }
                 break;
             default:
@@ -159,43 +145,23 @@ public class SimpleGameController {
     }
 
     private void handleTreasureKeys(KeyboardEvent.Key key) {
-        switch (key) {
-            case SPACE:
-                // Leave treasure room
-                System.out.println("Leaving treasure room...");
-                gameData.leaveTreasureRoom();
-                break;
-            default:
-                break;
+        if (key == KeyboardEvent.Key.SPACE) {
+            gameData.leaveTreasureRoom();
         }
-        // Equipment pickup handled by mouse clicks
     }
 
     private void handleMerchantKeys(KeyboardEvent.Key key) {
-        switch (key) {
-            case SPACE:
-                // Leave merchant
-                System.out.println("Leaving merchant...");
-                gameData.leaveMerchantRoom();
-                break;
-            default:
-                break;
+        if (key == KeyboardEvent.Key.SPACE) {
+            gameData.leaveMerchantRoom();
         }
     }
 
     private void handleHealerKeys(KeyboardEvent.Key key) {
         switch (key) {
             case H:
-                // Purchase healing
-                if (gameData.purchaseHealing()) {
-                    System.out.println("Purchased healing!");
-                } else {
-                    System.out.println("Not enough gold!");
-                }
+                gameData.purchaseHealing();
                 break;
             case SPACE:
-                // Leave healer
-                System.out.println("Leaving healer...");
                 gameData.leaveHealerRoom();
                 break;
             default:
@@ -235,17 +201,13 @@ public class SimpleGameController {
         if (x >= backpackX && y >= backpackY &&
             x <= backpackX + (gameData.getHero().getBackpack().getCols() * cellSize) &&
             y <= backpackY + (gameData.getHero().getBackpack().getRows() * cellSize)) {
-            
+
             int col = (x - backpackX) / cellSize;
             int row = (y - backpackY) / cellSize;
-            
-            // Find equipment at this position
-            for (model.Cell.PlacedEquipment pe : gameData.getHero().getBackpack().getEquipment()) {
-                if (pe.row() == row && pe.col() == col) {
-                    selectedEquipment = pe.equipment();
-                    System.out.println("Selected: " + selectedEquipment.getName() + " - Click on enemy to use");
-                    return;
-                }
+
+            model.Cell.PlacedEquipment pe = gameData.getHero().getBackpack().getEquipmentAt(row, col);
+            if (pe != null) {
+                selectedEquipment = pe;
             }
             return;
         }
@@ -270,70 +232,25 @@ public class SimpleGameController {
                 
                 // If equipment is selected, use it on the enemy
                 if (selectedEquipment != null) {
-                    useEquipmentOnEnemy(selectedEquipment, enemy);
+                    gameData.getCurrentCombat().useEquipment(selectedEquipment, enemy);
                     selectedEquipment = null;
+                    if (gameData.getCurrentCombat().isCombatEnded()) {
+                        gameData.endCombat();
+                    }
                 } else {
-                    // Basic attack
-                    if (gameData.getHero().getEnergy() >= 1) {
-                        gameData.getHero().useEnergy(1);
+                    // Basic attack (1 damage, costs 1 energy)
+                    if (gameData.getHero().useEnergy(1)) {
                         enemy.takeDamage(1);
-                        System.out.println("Punched " + enemy.getName() + " for 1 damage!");
-                        
-                        if (!enemy.isAlive()) {
-                            System.out.println(enemy.getName() + " defeated!");
-                        }
-
                         gameData.getCurrentCombat().cleanupDeadEnemies();
                         if (gameData.getCurrentCombat().isCombatEnded()) {
                             gameData.endCombat();
-                            System.out.println("Combat ended!");
                         }
-                    } else {
-                        System.out.println("Not enough energy! Press E to end turn.");
                     }
                 }
                 return;
             }
 
             currentY += (enemy.getStatusEffects().isEmpty() ? 100 : 120);
-        }
-    }
-
-    private void useEquipmentOnEnemy(model.equipment.Equipment equipment, model.combat.Enemy enemy) {
-        var hero = gameData.getHero();
-        
-        // Check resources
-        if (equipment.getEnergyCost() > hero.getEnergy()) {
-            System.out.println("Not enough energy! Need " + equipment.getEnergyCost() + ", have " + hero.getEnergy());
-            return;
-        }
-        
-        if (equipment.getManaCost() > hero.getMana()) {
-            System.out.println("Not enough mana! Need " + equipment.getManaCost() + ", have " + hero.getMana());
-            return;
-        }
-        
-        // Use equipment
-        hero.useEnergy(equipment.getEnergyCost());
-        hero.useMana(equipment.getManaCost());
-        
-        model.equipment.CombatContext context = new model.equipment.CombatContext(
-            hero, 
-            gameData.getCurrentCombat().getEnemies()
-        );
-        context.setTargetEnemy(enemy);
-        equipment.use(context);
-        
-        System.out.println("Used " + equipment.getName() + " on " + enemy.getName() + "!");
-        
-        if (!enemy.isAlive()) {
-            System.out.println(enemy.getName() + " defeated!");
-        }
-
-        gameData.getCurrentCombat().cleanupDeadEnemies();
-        if (gameData.getCurrentCombat().isCombatEnded()) {
-            gameData.endCombat();
-            System.out.println("Combat ended!");
         }
     }
 
@@ -364,14 +281,12 @@ public class SimpleGameController {
             if (equipment instanceof model.equipment.Gold gold) {
                 gameData.getHero().addGold(gold.getAmount());
                 content.removeEquipment(equipment);
-                System.out.println("Picked up " + gold.getAmount() + " gold!");
                 return;
             }
-            
-            // Other items need to be placed
+
+            // Other items need to be placed in the backpack
             pendingEquipment = equipment;
             content.removeEquipment(equipment);
-            System.out.println("Selected " + equipment.getName() + " - Click on backpack to place it");
             return;
         }
 
@@ -404,17 +319,13 @@ public class SimpleGameController {
             
             var equipment = equipmentList.get(itemIndex);
             
-            // Check if hero has enough gold
             if (gameData.getHero().getGold() < equipment.getBuyPrice()) {
-                System.out.println("Not enough gold! Need " + equipment.getBuyPrice() + ", have " + gameData.getHero().getGold());
                 return;
             }
-            
-            // Buy the item
+
             gameData.getHero().useGold(equipment.getBuyPrice());
             content.removeEquipment(equipment);
             pendingEquipment = equipment;
-            System.out.println("Bought " + equipment.getName() + " - Click on backpack to place it");
             return;
         }
 
@@ -437,12 +348,8 @@ public class SimpleGameController {
             int col = (x - backpackX) / cellSize;
             int row = (y - backpackY) / cellSize;
             
-            // Try to place equipment
             if (gameData.getHero().getBackpack().placeEquipment(pendingEquipment, row, col, 0)) {
-                System.out.println("Placed " + pendingEquipment.getName() + " at (" + row + ", " + col + ")");
                 pendingEquipment = null;
-            } else {
-                System.out.println("Cannot place here. Try another spot.");
             }
         }
     }

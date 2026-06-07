@@ -88,20 +88,10 @@ public record SimpleGameView(ApplicationContext context, int width, int height) 
     private void drawBackpack(Graphics2D g, model.Backpack backpack, int x, int y) {
         int cellSize = 40;
 
-        // Get equipment list
         java.util.List<model.Cell.PlacedEquipment> equipmentList = backpack.getEquipment();
-        int equipmentCount = equipmentList.size();
 
         g.setColor(Color.YELLOW);
-        g.drawString("=== BACKPACK (" + equipmentCount + " items) ===", x, y - 15);
-        
-        // DEBUG: Print equipment to console
-        if (equipmentCount > 0) {
-            System.out.println("[DEBUG] Drawing " + equipmentCount + " equipment(s):");
-            for (model.Cell.PlacedEquipment pe : equipmentList) {
-                System.out.println("  - " + pe.equipment().getName() + " at (" + pe.row() + "," + pe.col() + ") rot=" + pe.rotation());
-            }
-        }
+        g.drawString("=== BACKPACK (" + equipmentList.size() + " items) ===", x, y - 15);
 
         // Draw grid background first
         for (int r = 0; r < backpack.getRows(); r++) {
