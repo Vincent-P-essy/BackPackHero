@@ -1,0 +1,34 @@
+{
+  "jobs": [
+    {
+      "root": ".",
+      "label": "BackPackHero",
+      "caption": "The Java console game started with its inventory and help commands. GUI compilation is checked separately and any library incompatibility remains visible.",
+      "setup": [
+        [
+          "python",
+          "-c",
+          "from pathlib import Path; Path('bin').mkdir(exist_ok=True)"
+        ]
+      ],
+      "commands": [
+        [
+          "javac",
+          "-d",
+          "bin",
+          "-cp",
+          "src",
+          "src/Main.java"
+        ],
+        [
+          "python",
+          "docs/examples/console-session.py"
+        ],
+        [
+          "bash",
+          "compile.sh"
+        ]
+      ]
+    }
+  ]
+}
