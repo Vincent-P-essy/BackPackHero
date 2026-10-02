@@ -6,17 +6,18 @@ Un roguelike dans lequel l'inventaire est un puzzle : les objets ont des formes 
 
 ---
 
-<!-- execution-capture -->
-## Execution preview
+## Gameplay
 
-![BackPackHero](docs/screenshots/execution.png)
+![Exploration du donjon et inventaire du héros](docs/screenshots/dungeon-exploration.png)
 
-The Java console game started with its inventory and help commands. GUI compilation is checked separately and any library incompatibility remains visible. [Verification](docs/verification.md).
-<!-- /execution-capture -->
+![Combat tour par tour avec équipement et intentions des ennemis](docs/screenshots/turn-based-combat.png)
+
+Captures de l’interface graphique en cours de partie : exploration, puis combat après utilisation de l’épée.
+
 
 ## Fonctionnalités
 
-- **Sac à dos puzzle** — grille 5×7, placement et rotation des objets (0°, 90°, 180°, 270°)
+- **Sac à dos puzzle** — grille initiale 3×5, extensible au fil de la progression, placement et rotation des objets (0°, 90°, 180°, 270°)
 - **Système de combat tour par tour** — énergie, mana, effets de statut (poison, régénération, force, faiblesse)
 - **Donjon procédural** — étages générés aléatoirement avec salles ennemis, trésors, marchands et soigneurs
 - **5 ennemis** — SmallRatWolf, RatWolf, FrogSorcerer, LivingShadow, BeeQueen (boss)
@@ -30,7 +31,7 @@ The Java console game started with its inventory and help commands. GUI compilat
 ## Compilation et lancement
 
 ### Prérequis
-- Java 17 ou supérieur
+- JDK 21 ou supérieur (compilation console et interface graphique)
 - La librairie `zen-6.0.jar` est incluse dans `lib/`
 
 ### Compiler
