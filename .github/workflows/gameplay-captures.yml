@@ -1,0 +1,113 @@
+name: Play and capture games
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/gameplay/**'
+      - '.github/workflows/gameplay-captures.yml'
+permissions:
+  contents: read
+jobs:
+  gameplay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          - repo: BackPackHero
+            ref: bcc83a444e8a4690e1654e2c0309c65ed467a84b
+            kind: java
+          - repo: Darkestcdungeon
+            ref: 08876fc6e71c5f5b69ca1e49ed527ca7a00477ad
+            kind: native
+          - repo: Pieges-
+            ref: 37e11f435cb12341e8b0114d8bfba144d5a9f0d2
+            kind: native
+          - repo: pythia
+            ref: cc95b1aec9fcd922e3f66e7de3f71b8957dc3cc0
+            kind: native
+          - repo: minecraft-clone
+            ref: a6e487f7fb94d6e8059d28522e15199561ba6886
+            kind: web
+          - repo: tropico2
+            ref: 2c1ce711e49fdd377990e8f3aeb688e8aed1dd3a
+            kind: web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: capture-tools
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: Vincent-P-essy/${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: game
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        if: matrix.kind == 'java'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        if: matrix.kind == 'web'
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        if: matrix.kind != 'web'
+        with:
+          python-version: '3.12'
+      - name: Native display dependencies
+        if: matrix.kind != 'web'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool xterm openbox fonts-dejavu python3-tk
+          python -m pip install Pillow
+      - name: Install and build browser game
+        if: matrix.kind == 'web'
+        working-directory: game
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: '1'
+        run: |
+          npm ci
+          npx puppeteer browsers install chrome
+          npm run build
+      - name: Play browser game
+        if: matrix.kind == 'web'
+        working-directory: game
+        env:
+          GAME_REPO: ${{ matrix.repo }}
+        run: |
+          cp ../capture-tools/.github/gameplay/browser.mjs ./gameplay-capture.mjs
+          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/preview.log 2>&1 &
+          node gameplay-capture.mjs
+      - name: Compile Backpack Hero
+        if: matrix.kind == 'java'
+        working-directory: game
+        run: |
+          bash compile.sh
+          javac -cp 'lib/zen-6.0.jar:bin' -d bin ../capture-tools/.github/gameplay/GameplayCapture.java
+      - name: Install Pythia offline game
+        if: matrix.repo == 'pythia'
+        run: python -m pip install -e ./game
+      - name: Compile Darkest C Dungeon
+        if: matrix.repo == 'Darkestcdungeon'
+        run: make -C game
+      - name: Play desktop or terminal game
+        if: matrix.kind != 'web'
+        working-directory: game
+        env:
+          GAME_REPO: ${{ matrix.repo }}
+        run: |
+          xvfb-run -a -s '-screen 0 1024x1000x24' sh -c 'openbox >/tmp/window-manager.log 2>&1 & python ../capture-tools/.github/gameplay/native.py'
+      - name: Export verified screenshots
+        run: python capture-tools/.github/gameplay/export.py game
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gameplay-${{ matrix.repo }}
+          path: |
+            game/docs/screenshots/gameplay*.png
+            game/docs/gameplay.json
+          if-no-files-found: error
+          retention-days: 14
