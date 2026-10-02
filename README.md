@@ -6,6 +6,14 @@ Un roguelike dans lequel l'inventaire est un puzzle : les objets ont des formes 
 
 ---
 
+<!-- execution-capture -->
+## Execution preview
+
+![BackPackHero](docs/screenshots/execution.png)
+
+The Java console game started with its inventory and help commands. GUI compilation is checked separately and any library incompatibility remains visible. [Verification](docs/verification.md).
+<!-- /execution-capture -->
+
 ## Fonctionnalités
 
 - **Sac à dos puzzle** — grille 5×7, placement et rotation des objets (0°, 90°, 180°, 270°)

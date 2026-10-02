@@ -1,0 +1,174 @@
+$ javac -d bin -cp src src/Main.java
+
+Exit: 0
+
+$ python docs/examples/console-session.py
+Traceback (most recent call last):
+  File "docs/examples/console-session.py", line 20, in <module>
+    process.kill();raise RuntimeError("Console session timed out")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Console session timed out
+
+Exit: 1
+
+$ bash compile.sh
+=========================================
+  Compilation de Backpack Hero
+=========================================
+
+[1/2] Compilation de la version console...
+     Version console compilee avec succes
+
+[2/2] Compilation de l'interface graphique...
+src/MainGui.java:1: error: cannot access Application
+import com.github.forax.zen.Application;
+                           ^
+  bad class file: lib/zen-6.0.jar(/com/github/forax/zen/Application.class)
+    class file has wrong version 65.0, should be 61.0
+    Please remove or make sure it appears in the correct subdirectory of the classpath.
+src/controller/SimpleGameController.java:3: error: cannot access ApplicationContext
+import com.github.forax.zen.ApplicationContext;
+                           ^
+  bad class file: lib/zen-6.0.jar(/com/github/forax/zen/ApplicationContext.class)
+    class file has wrong version 65.0, should be 61.0
+    Please remove or make sure it appears in the correct subdirectory of the classpath.
+src/controller/SimpleGameController.java:4: error: cannot access Event
+import com.github.forax.zen.Event;
+                           ^
+  bad class file: lib/zen-6.0.jar(/com/github/forax/zen/Event.class)
+    class file has wrong version 65.0, should be 61.0
+    Please remove or make sure it appears in the correct subdirectory of the classpath.
+src/controller/SimpleGameController.java:5: error: cannot access KeyboardEvent
+import com.github.forax.zen.KeyboardEvent;
+                           ^
+  bad class file: lib/zen-6.0.jar(/com/github/forax/zen/KeyboardEvent.class)
+    class file has wrong version 65.0, should be 61.0
+    Please remove or make sure it appears in the correct subdirectory of the classpath.
+src/controller/SimpleGameController.java:6: error: cannot access PointerEvent
+import com.github.forax.zen.PointerEvent;
+                           ^
+  bad class file: lib/zen-6.0.jar(/com/github/forax/zen/PointerEvent.class)
+    class file has wrong version 65.0, should be 61.0
+    Please remove or make sure it appears in the correct subdirectory of the classpath.
+src/view/SimpleGameView.java:8: error: cannot find symbol
+public record SimpleGameView(ApplicationContext context, int width, int height) implements GameView {
+                             ^
+  symbol:   class ApplicationContext
+  location: class SimpleGameView
+src/controller/SimpleGameController.java:57: error: cannot find symbol
+    private void handleEvent(Event event) {
+                             ^
+  symbol:   class Event
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:69: error: package KeyboardEvent does not exist
+    private void handleKeyPress(KeyboardEvent.Key key) {
+                                             ^
+src/controller/SimpleGameController.java:99: error: package KeyboardEvent does not exist
+    private void handleExploringKeys(KeyboardEvent.Key key) {
+                                                  ^
+src/controller/SimpleGameController.java:129: error: package KeyboardEvent does not exist
+    private void handleCombatKeys(KeyboardEvent.Key key) {
+                                               ^
+src/controller/SimpleGameController.java:147: error: package KeyboardEvent does not exist
+    private void handleTreasureKeys(KeyboardEvent.Key key) {
+                                                 ^
+src/controller/SimpleGameController.java:153: error: package KeyboardEvent does not exist
+    private void handleMerchantKeys(KeyboardEvent.Key key) {
+                                                 ^
+src/controller/SimpleGameController.java:159: error: package KeyboardEvent does not exist
+    private void handleHealerKeys(KeyboardEvent.Key key) {
+                                               ^
+src/MainGui.java:9: error: cannot find symbol
+        Application.run(Color.BLACK, context -> {
+        ^
+  symbol:   variable Application
+  location: class MainGui
+src/controller/SimpleGameController.java:29: error: cannot find symbol
+        ApplicationContext context = view.context();
+        ^
+  symbol:   class ApplicationContext
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:32: error: cannot find symbol
+            Event event = context.pollOrWaitEvent(20);
+            ^
+  symbol:   class Event
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:45: error: cannot find symbol
+                Event event = context.pollOrWaitEvent(100);
+                ^
+  symbol:   class Event
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:46: error: cannot find symbol
+                if (event instanceof KeyboardEvent ke) {
+                                     ^
+  symbol:   class KeyboardEvent
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:47: error: package KeyboardEvent does not exist
+                    if (ke.action() == KeyboardEvent.Action.KEY_PRESSED && ke.key() == KeyboardEvent.Key.Q) {
+                                                    ^
+src/controller/SimpleGameController.java:47: error: package KeyboardEvent does not exist
+                    if (ke.action() == KeyboardEvent.Action.KEY_PRESSED && ke.key() == KeyboardEvent.Key.Q) {
+                                                                                                    ^
+src/controller/SimpleGameController.java:58: error: cannot find symbol
+        if (event instanceof KeyboardEvent ke) {
+                             ^
+  symbol:   class KeyboardEvent
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:59: error: package KeyboardEvent does not exist
+            if (ke.action() == KeyboardEvent.Action.KEY_PRESSED) {
+                                            ^
+src/controller/SimpleGameController.java:62: error: cannot find symbol
+        } else if (event instanceof PointerEvent pe) {
+                                    ^
+  symbol:   class PointerEvent
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:63: error: package PointerEvent does not exist
+            if (pe.action() == PointerEvent.Action.POINTER_DOWN) {
+                                           ^
+src/controller/SimpleGameController.java:73: error: package KeyboardEvent does not exist
+        if (key == KeyboardEvent.Key.Q) {
+                                ^
+src/controller/SimpleGameController.java:108: error: cannot find symbol
+            case UP:
+                 ^
+  symbol:   variable UP
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:111: error: cannot find symbol
+            case DOWN:
+                 ^
+  symbol:   variable DOWN
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:114: error: cannot find symbol
+            case LEFT:
+                 ^
+  symbol:   variable LEFT
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:117: error: cannot find symbol
+            case RIGHT:
+                 ^
+  symbol:   variable RIGHT
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:135: error: cannot find symbol
+            case E:
+                 ^
+  symbol:   variable E
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:148: error: package KeyboardEvent does not exist
+        if (key == KeyboardEvent.Key.SPACE) {
+                                ^
+src/controller/SimpleGameController.java:154: error: package KeyboardEvent does not exist
+        if (key == KeyboardEvent.Key.SPACE) {
+                                ^
+src/controller/SimpleGameController.java:161: error: cannot find symbol
+            case H:
+                 ^
+  symbol:   variable H
+  location: class SimpleGameController
+src/controller/SimpleGameController.java:164: error: cannot find symbol
+            case SPACE:
+                 ^
+  symbol:   variable SPACE
+  location: class SimpleGameController
+34 errors
+
+Exit: 1
