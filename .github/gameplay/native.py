@@ -32,7 +32,7 @@ def window(title):
         proc = subprocess.run(['xdotool', 'search', '--onlyvisible', '--name', title], capture_output=True, text=True)
         return proc.stdout.splitlines()[0] if proc.returncode == 0 else None
     win = wait_for(find)
-    xdo('windowactivate', '--sync', win)
+    xdo('windowfocus', '--sync', win)
     xdo('windowmove', win, 0, 0)
     return win
 
